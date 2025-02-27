@@ -22,7 +22,14 @@ class Users:
         return await self.collection.find().to_list()
 
     async def set_score(self, name: str, score: int):
-        ...
+        filter = {"name": name}
+        document = await self.collection.find_one(filter)
+
+        if not document:
+            return
+
+        document["score"] = score
+        await self.collection.replace_one(filter, document)
 
     async def delete(self, name: str):
         filter = {"name": name}
