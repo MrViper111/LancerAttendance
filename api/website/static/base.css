@@ -1,0 +1,15 @@
+* {
+    font-family: Karla;
+}
+
+body {
+    background-color: white;
+}
+
+.container1 {
+    background-color: #f1f1f1;
+    padding: 0.625rem;
+    margin: 0.625rem;
+    border-radius: 6px;
+    box-shadow: 2px 2px 4px #000000;
+}
