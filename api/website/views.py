@@ -6,9 +6,9 @@ import random
 from flask import Blueprint, render_template, request, jsonify
 from functools import update_wrapper, wraps
 
-from api.database import Database
-from api.positions import Positions
-from api.structures.users import Users
+from database import Database
+from positions import Positions
+from structures.users import Users
 
 views = Blueprint("views", __name__)
 db = Database.establish_connection(Database.URI, Database.NAME)
