@@ -2,6 +2,7 @@ import json
 import os
 import datetime
 import random
+from crypt import methods
 
 from flask import Blueprint, render_template, request, jsonify
 from functools import update_wrapper, wraps
@@ -24,6 +25,14 @@ def home():
 def get_status():
     data = {'name': 'Alice', 'age': 25}
     return jsonify(data)
+
+@views.route("api/create_user", methods=["POST"])
+async def create_user():
+    name = request.args.get("name")
+    email = request.args.get("email")
+    position = request.args.get("position")
+
+    await users.create(name, email, position, False)
 
 @views.route("api/get_users")
 def get_users():
