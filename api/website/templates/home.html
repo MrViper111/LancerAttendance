@@ -5,13 +5,23 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+        <link href='https://fonts.googleapis.com/css?family=Karla' rel='stylesheet'>
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='base.css') }}">
+
+        <script src="{{ url_for('static', filename='home.js') }}"></script>
 
         <title>Home</title>
     </head>
 
     <body>
-        <div class="container1">Kill me please</div>
+
+        <div class="container1 inline-container">
+            <h2>Leaderboard</h2>
+            <p>Lancer Attendance, 2024-2025</p>
+        </div>
+
+        <div id="user-container"></div>
+
     </body>
 
 </html>

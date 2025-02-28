@@ -1,6 +1,6 @@
 import os
 
-import motor.motor_asyncio
+from pymongo import MongoClient
 from dotenv import load_dotenv
 
 
@@ -13,5 +13,5 @@ class Database:
 
     @staticmethod
     def establish_connection(uri, database_name):
-        mongo_client = motor.motor_asyncio.AsyncIOMotorClient(uri)
-        return mongo_client[database_name]
+        client = MongoClient(uri)
+        return client[database_name]

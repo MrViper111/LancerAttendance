@@ -1,4 +1,4 @@
-* {
+*, root {
     font-family: Karla;
 }
 
@@ -6,10 +6,24 @@ body {
     background-color: white;
 }
 
+h1, h2, h3, p {
+    margin: 2px;
+}
+
+.lesser {
+    color: #919191;
+}
+
+.inline-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
 .container1 {
-    background-color: #f1f1f1;
+    background-color: #f5f5f5;
     padding: 0.625rem;
     margin: 0.625rem;
     border-radius: 6px;
-    box-shadow: 2px 2px 4px #000000;
+    box-shadow: 1px 1px 4px #000000;
 }

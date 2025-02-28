@@ -1,36 +1,63 @@
-from motor.motor_asyncio import AsyncIOMotorCollection
+from pymongo.synchronous.collection import Collection
 
 
 class Users:
 
-    def __init__(self, collection: AsyncIOMotorCollection):
+    def __init__(self, collection: Collection):
         self.collection = collection
 
-    async def create(self, name: str, email: str, position: str, admin: bool):
-        await self.collection.insert_one({
+    def create(self, name: str, email: str, position: str, admin: bool):
+        filter = {"email": email}
+        document = self.collection.find_one(filter)
+
+        if document:
+            return False
+
+        self.collection.insert_one({
             "email": email,
             "name": name,
             "position": position,
             "admin": admin,
             "score": 0
         })
+        return True
 
-    async def get(self, filter: dict):
+    def update(self, email: str, position: str = None, score: int = None, admin: bool = False):
+        filter = {"email": email}
+        document = self.collection.find_one(filter)
+
+        if not document:
+            return False
+
+        document["position"] = position if position else document["position"]
+        document["score"] = score if score else document["score"]
+        document["admin"] = admin if admin else False
+
+        self.collection.replace_one(filter, document)
+        return True
+
+    def delete(self, email):
+        filter = {"email": email}
+        document = self.collection.find_one(filter)
+
+        if not document:
+            return False
+
+        self.collection.delete_one(filter)
+        return True
+
+    def get(self, filter: dict):
         return self.collection.find_one(filter)
 
-    async def get_all(self):
-        return await self.collection.find().to_list()
+    def get_all(self):
+        return self.collection.find({}, {"_id": 0}).to_list()
 
-    async def set_score(self, name: str, score: int):
-        filter = {"name": name}
-        document = await self.collection.find_one(filter)
+    def set_score(self, email: str, score: int):
+        filter = {"email": email}
+        document = self.collection.find_one(filter)
 
         if not document:
             return
 
         document["score"] = score
-        await self.collection.replace_one(filter, document)
-
-    async def delete(self, name: str):
-        filter = {"name": name}
-        await self.collection.delete_one(filter)
+        self.collection.replace_one(filter, document)
