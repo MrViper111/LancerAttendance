@@ -1,7 +1,7 @@
 import asyncio
 import json
 import os
-import datetime
+from datetime import datetime
 import random
 from crypt import methods
 from threading import Thread
@@ -22,6 +22,13 @@ users = Users(db.users)
 def home():
     return render_template("home.html")
 
+@views.route("login")
+def login():
+    return render_template("login.html")
+
+@views.route("admin")
+def admin():
+    return render_template("adminpanel.html")
 
 # the api stuff
 
@@ -83,3 +90,33 @@ def delete_user():
 @views.route("api/get_users", methods=["GET"])
 def get_users():
     return {"status": 200, "response": users.get_all()}
+
+
+@views.route("api/get_user")
+def get_user():
+    name = request.args.get("name")
+    return {"status": 200, "response": users.get({"name": name})}
+
+
+@views.route("api/check_in")
+def check_in():
+    data = request.get_json(silent=True)
+    email = data.get("email")
+
+    checked_in = users.check_in(email)
+    return {"status": 200, "response": "Checked in" if checked_in else "Checked out"}
+
+
+@views.route("api/is_present")
+def is_checked_in():
+    email = request.args.get("email")
+    user = users.get({"email": email})
+
+    if not user["attendance"]:
+        return {"status": 200, "response": False}
+
+    last_obj = user["attendance"][-1]
+    if last_obj["date"] == datetime.now().strftime("%x") and not last_obj["out"]:
+        return {"status": 200, "response": True}
+
+    return {"status": 200, "response": False}

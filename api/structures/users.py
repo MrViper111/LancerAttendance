@@ -1,3 +1,6 @@
+import time
+from datetime import datetime
+
 from pymongo.synchronous.collection import Collection
 
 
@@ -18,7 +21,8 @@ class Users:
             "name": name,
             "position": position,
             "admin": admin,
-            "score": 0
+            "score": 0,
+            "attendance": []
         })
         return True
 
@@ -47,7 +51,7 @@ class Users:
         return True
 
     def get(self, filter: dict):
-        return self.collection.find_one(filter)
+        return self.collection.find_one(filter, {"_id": 0})
 
     def get_all(self):
         return self.collection.find({}, {"_id": 0}).to_list()
@@ -61,3 +65,25 @@ class Users:
 
         document["score"] = score
         self.collection.replace_one(filter, document)
+
+    def check_in(self, email: str):
+        filter = {"email": email}
+        document = self.collection.find_one(filter)
+
+        if not document:
+            return
+
+        for obj in document["attendance"]:
+            if not obj["out"] and obj["date"] == datetime.now().strftime("%x"):
+                obj["out"] = int(time.time())
+                self.collection.replace_one(filter, document)
+                return False
+
+        document["attendance"].append({
+            "date": datetime.now().strftime("%x"),
+            "in": int(time.time()),
+            "out": None
+        })
+
+        self.collection.replace_one(filter, document)
+        return True
