@@ -5,7 +5,7 @@ from datetime import datetime
 import random
 from crypt import methods
 from threading import Thread
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, redirect
 from functools import update_wrapper, wraps
 
 from database import Database
@@ -22,13 +22,19 @@ users = Users(db.users)
 def home():
     return render_template("home.html")
 
-@views.route("login")
+@views.route("login", methods=["GET", "POST"])
 def login():
+    if request.method != "POST":
+        return render_template("login.html")
+
+    if request.form["email"] == "jake" and request.form["password"] == "jin":
+        return render_template("adminpanel.html")
+
     return render_template("login.html")
 
 @views.route("admin")
 def admin():
-    return render_template("adminpanel.html")
+    return redirect("login")
 
 # the api stuff
 

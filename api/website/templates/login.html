@@ -20,30 +20,34 @@
             </div>
             <hr>
 
-            <p>Email</p>
-            <input type="text" name="" id="" class="input">
+            <form action="login" method="POST">
 
-            <p>&nbsp;</p>
+                <p>Email</p>
+                <input type="text" name="email" id="" class="input" required>
 
-            <p>Password <i class="bi bi-eye-slash-fill" onclick="togglePassword()"></i></p>
-            <input type="password" name="password" id="password-input" class="input">
+                <p>&nbsp;</p>
 
-            <script>
-            function togglePassword() {
-                let passwordField = document.getElementById("password-input");
-                passwordField.type = passwordField.type === "password" ? "text" : "password";
-            }
-            </script>
+                <p>Password <i class="bi bi-eye-slash-fill" onclick="togglePassword()"></i></p>
+                <input type="password" name="password" id="password-input" class="input" required>
 
-            <p>&nbsp;</p>
+                <script>
+                function togglePassword() {
+                    let passwordField = document.getElementById("password-input");
+                    passwordField.type = passwordField.type === "password" ? "text" : "password";
+                }
+                </script>
 
-            <div style="display: flex; align-items: center; gap: 5px; justify-content: space-between;">
-                <button class="green-button" style="width: 50%">Login</button>
-                <div style="display: flex; align-items: center; gap: 5px;">
-                    <p style="margin: 0; line-height: 1;">Remember me</p>
-                    <input type="checkbox" name="" id="remember-me-checkbox" class="checkbox">
+                <p>&nbsp;</p>
+
+                <div style="display: flex; align-items: center; gap: 5px; justify-content: space-between;">
+                    <button class="green-button" type="submit" style="width: 50%">Login</button>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <p style="margin: 0; line-height: 1;">Remember me</p>
+                        <input type="checkbox" name="" id="remember-me-checkbox" class="checkbox">
+                    </div>
                 </div>
-            </div>
+
+            </form>
 
         </div>
     </body>
