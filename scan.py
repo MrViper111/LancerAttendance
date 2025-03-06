@@ -8,8 +8,6 @@ import requests
 from tkinterweb import HtmlFrame  # import the HtmlFrame widget
 
 
-last_scanned = 0
-
 
 class QRScannerApp:
     def __init__(self, root):
@@ -25,6 +23,7 @@ class QRScannerApp:
         # Start scanning in a separate thread
         self.running = True
         threading.Thread(target=self.scan_qr_code, daemon=True).start()
+        self.last_scanned = 0
 
     def scan_qr_code(self):
         cap = cv2.VideoCapture(0)  # Open webcam
@@ -60,8 +59,9 @@ class QRScannerApp:
                 response = requests.get(url, json=data)  # use `json=data` for JSON payload or `data=data` for form data
                 print(response.json())
 
-                if time.time() - last_scanned <= 3:
+                if time.time() - self.last_scanned <= 3:
                     continue
+                self.last_scanned = time.time()
 
                 if response.json()["response"] == "Checked out":
                     self.root.after(0, self.show_checkout_screen, name)
