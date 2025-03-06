@@ -61,8 +61,7 @@ class QRScannerApp:
                 else:
                     self.root.after(0, self.show_checkmark_screen, name)  # Show checkmark screen
 
-                time.sleep(2)  # Pause before returning to scanning mode
-                self.root.after(0, self.show_scanner_screen)  # Return to scanning
+                self.root.after(2000, self.show_scanner_screen)
 
             elif not name:
                 self.root.after(0, self.update_label, "Waiting for QR Code...")  # Reset UI when no QR detected
