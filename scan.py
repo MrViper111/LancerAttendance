@@ -33,7 +33,10 @@ class QRScannerApp:
                 continue
 
             # Detect QR Code
-            name, points, _ = qr_detector.detectAndDecode(frame)
+            try:
+                name, points, _ = qr_detector.detectAndDecode(frame)
+            except:
+                pass
 
             if name:
                 # Prevent multiple rapid scans
