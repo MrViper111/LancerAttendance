@@ -8,6 +8,9 @@ import requests
 from tkinterweb import HtmlFrame  # import the HtmlFrame widget
 
 
+last_scanned = 0
+
+
 class QRScannerApp:
     def __init__(self, root):
         self.root = root
@@ -56,12 +59,16 @@ class QRScannerApp:
 
                 response = requests.get(url, json=data)  # use `json=data` for JSON payload or `data=data` for form data
                 print(response.json())
+
+                if time.time() - last_scanned <= 3:
+                    continue
+
                 if response.json()["response"] == "Checked out":
                     self.root.after(0, self.show_checkout_screen, name)
                 else:
                     self.root.after(0, self.show_checkmark_screen, name)  # Show checkmark screen
 
-                self.root.after(2000, self.show_scanner_screen)
+                self.root.after(0, self.show_scanner_screen)  # Return to scanning
 
             elif not name:
                 self.root.after(0, self.update_label, "Waiting for QR Code...")  # Reset UI when no QR detected
