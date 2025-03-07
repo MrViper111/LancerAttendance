@@ -104,7 +104,7 @@ def get_users():
 
 @views.route("api/get_user")
 def get_user():
-    name = request.args.get("name")
+    name = request.args.get("name").lower().title()
     return {"status": 200, "response": users.get({"name": name})}
 
 
