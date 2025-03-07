@@ -36,9 +36,9 @@ def login():
 def admin_home():
     return redirect("/login")
 
-@views.route("admin/profile")
-def admin_profile():
-    return render_template("profile.html")
+@views.route("admin/profile/<name>")
+def admin_profile(name):
+    return render_template("profile.html", name=name)
 
 # the api stuff
 

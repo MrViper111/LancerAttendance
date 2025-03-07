@@ -194,3 +194,10 @@ hr {
     padding-inline: 10px;
     color: #696969;
 }
+
+.check-in-out {
+    padding: 6px;
+    margin: 4px;
+    background-color: #e7e7e7;
+    border-radius: 16px;
+}
