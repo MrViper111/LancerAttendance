@@ -32,9 +32,13 @@ def login():
 
     return render_template("login.html")
 
-@views.route("admin")
-def admin():
-    return redirect("login")
+@views.route("admin/home")
+def admin_home():
+    return redirect("/login")
+
+@views.route("admin/profile")
+def admin_profile():
+    return render_template("profile.html")
 
 # the api stuff
 

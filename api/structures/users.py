@@ -76,6 +76,8 @@ class Users:
         for obj in document["attendance"]:
             if not obj["out"] and obj["date"] == datetime.now().strftime("%x"):
                 obj["out"] = int(time.time())
+                document["score"] += int((obj["out"] - obj["in"]) / 60)
+
                 self.collection.replace_one(filter, document)
                 return False
 
