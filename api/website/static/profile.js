@@ -58,7 +58,7 @@ function updateUserProfile(user) {
 // Converts a Unix timestamp (in seconds) to a "H:MM" string.
 function formatTime(timestamp) {
   var date = new Date(timestamp * 1000);
-  var hours = date.getHours();
+  var hours = date.getHours() % 12 || 12; // Convert to 12-hour format
   var minutes = date.getMinutes();
   return hours + ":" + (minutes < 10 ? "0" + minutes : minutes);
 }
