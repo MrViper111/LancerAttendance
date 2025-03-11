@@ -9,12 +9,15 @@ from flask import Blueprint, render_template, request, jsonify, redirect
 from functools import update_wrapper, wraps
 
 from database import Database
+from flask_cors import CORS
 from positions import Positions
 from structures.users import Users
 
 views = Blueprint("views", __name__)
 db = Database.establish_connection(Database.URI, Database.NAME)
 users = Users(db.users)
+
+CORS(views)
 
 # Create a background event loop
 

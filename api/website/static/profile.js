@@ -192,6 +192,29 @@ function renderUsers(user) {
   }
 }
 
+function downloadJSON(jsonData) {
+    if (!jsonData) {
+        console.error('Invalid JSON data');
+        return;
+    }
+
+    const jsonString = JSON.stringify(jsonData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = jsonData.name.replace(" ", "");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(url);
+}
+
+
+
+
 // ---------- Step 4: Main entry point ----------
 function main() {
   // Update the displayed name, email, position, and score
