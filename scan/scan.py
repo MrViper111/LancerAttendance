@@ -12,7 +12,7 @@ def set_status(status, name):
     eel.changeStatus(status, name)
 
 # Run Eel in a separate thread
-eel_thread = threading.Thread(target=eel.start, args=("index.html",), kwargs={"host": "0.0.0.0", "cmdline_args": ["--kiosk"]}, daemon=True)
+eel_thread = threading.Thread(target=eel.start, args=("index.html",), kwargs={"host": "0.0.0.0"}, daemon=True)
 eel_thread.start()
 
 cap = cv2.VideoCapture(0)
@@ -51,6 +51,7 @@ while True:
         eel.reloadPage()
         time.sleep(0.1)
 
+        ret, frame = cap.read()
         name = name.lower().title()
         if response.json().get("response") == "Checked out":
             set_status(-1, name)
