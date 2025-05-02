@@ -21,9 +21,6 @@ last_scanned = time.time()
 
 while True:
     ret, frame = cap.read()
-    print("capturing frame")
-    cv2.imshow("Camera", frame)
-
     if not ret:
         print("failed to capture frame, OK")
         continue
@@ -35,49 +32,56 @@ while True:
             blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
             cv2.THRESH_BINARY, 15, 3
         )
-        name, points, _ = qr_detector.detectAndDecode(thresh)
-        if not name:
-            print("No QR code detected")
+        kernel = np.ones((3, 3), np.uint8)
+        processed = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
     except Exception as e:
         print(f"QR Decode Error: {e}")
-        name = None
+        processed = None
 
-    if name:
-        print(f"Name found: {name}")
-        if time.time() - last_scanned <= 3.0:
+    if processed is not None:
+        if time.time() - last_scanned < 3:
+            cv2.imshow("Processed", processed)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
             continue
-        try:
-            url = f"http://0.0.0.0:8080/api/get_user?name={name}"
-            response = requests.get(url, timeout=2)
 
-            if response.json().get("response") is None:
-                print("User does not exist")
-                continue
-            else:
-                print(f"Found user: {name}")
+        name, points, _ = qr_detector.detectAndDecode(processed)
+        if not name:
+            print("No QR code detected")
+        else:
+            print(f"Name found: {name}")
+            try:
+                url = f"http://0.0.0.0:8080/api/get_user?name={name}"
+                response = requests.get(url, timeout=2)
 
-            email = response.json()["response"]["email"]
-            url = "http://0.0.0.0:8080/api/check_in"
-            data = {"email": email}
-            response = requests.post(url, json=data, timeout=2)
+                if response.json().get("response") is None:
+                    print("User does not exist")
+                    continue
+                else:
+                    print(f"Found user: {name}")
 
-            eel.reloadPage()
-            time.sleep(0.1)
+                last_scanned = time.time()
 
-            name = name.lower().title()
-            if response.json().get("response") == "Checked out":
-                set_status(-1, name)
-            else:
-                set_status(1, name)
+                email = response.json()["response"]["email"]
+                url = "http://0.0.0.0:8080/api/check_in"
+                data = {"email": email}
+                response = requests.post(url, json=data, timeout=2)
 
-            last_scanned = time.time()
-            time.sleep(3)
-            set_status(0, "")
-            for _ in range(int(3 / 0.1)):
-                cap.read()
+                eel.reloadPage()
                 time.sleep(0.1)
-        except:
-            continue
+
+                name = name.lower().title()
+                if response.json().get("response") == "Checked out":
+                    set_status(-1, name)
+                else:
+                    set_status(1, name)
+
+                set_status(0, "")
+            except:
+                continue
+
+    if processed is not None:
+        cv2.imshow("Processed", processed)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
