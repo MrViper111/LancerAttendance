@@ -28,16 +28,17 @@ while True:
 
     try:
         name, points, _ = qr_detector.detectAndDecode(frame)
+        if not name:
+            print("No QR code detected")
     except Exception as e:
         print(f"QR Decode Error: {e}")
         name = None
 
     if name:
+        print(f"Name found: {name}")
         if time.time() - last_scanned <= 3.0:
             continue
-
         try:
-            print(f"Name found: {name}")
             url = f"http://0.0.0.0:8080/api/get_user?name={name}"
             response = requests.get(url, timeout=2)
 
@@ -69,6 +70,8 @@ while True:
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+
+    time.sleep(0.1)  # so its not like 43294823904 fps
 
 cap.release()
 cv2.destroyAllWindows()
