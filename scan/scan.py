@@ -43,44 +43,48 @@ while True:
                 break
             continue
 
-        name, points, _ = qr_detector.detectAndDecode(processed)
-        if points is not None:
+        retval, points = qr_detector.detect(processed)
+        if retval and points is not None:
             pts = points[0].astype(int)
             x, y, w, h = cv2.boundingRect(pts)
             cv2.rectangle(processed, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        if not name:
-            print("No QR code detected")
-        else:
-            print(f"Name found: {name}")
-            try:
-                url = f"http://0.0.0.0:8080/api/get_user?name={name}"
-                response = requests.get(url)
 
-                if response.json().get("response") is None:
-                    print("User does not exist")
+            name, _ = qr_detector.decode(processed, points)
+            if not name:
+                print("QR detected but not decoded")
+            else:
+                print(f"Name found: {name}")
+                try:
+                    url = f"http://0.0.0.0:8080/api/get_user?name={name}"
+                    response = requests.get(url)
+
+                    if response.json().get("response") is None:
+                        print("User does not exist")
+                        continue
+                    else:
+                        print(f"Found user: {name}")
+
+                    last_scanned = time.time()
+
+                    email = response.json()["response"]["email"]
+                    url = "http://0.0.0.0:8080/api/check_in"
+                    data = {"email": email}
+                    response = requests.post(url, json=data)
+
+                    eel.reloadPage()
+                    time.sleep(0.1)
+
+                    name = name.lower().title()
+                    if response.json().get("response") == "Checked out":
+                        set_status(-1, name)
+                    else:
+                        set_status(1, name)
+
+                    set_status(0, "")
+                except:
                     continue
-                else:
-                    print(f"Found user: {name}")
-
-                last_scanned = time.time()
-
-                email = response.json()["response"]["email"]
-                url = "http://0.0.0.0:8080/api/check_in"
-                data = {"email": email}
-                response = requests.post(url, json=data)
-
-                eel.reloadPage()
-                time.sleep(0.1)
-
-                name = name.lower().title()
-                if response.json().get("response") == "Checked out":
-                    set_status(-1, name)
-                else:
-                    set_status(1, name)
-
-                set_status(0, "")
-            except:
-                continue
+        else:
+            print("No QR code detected")
 
     if processed is not None:
         cv2.imshow("Processed", processed)
