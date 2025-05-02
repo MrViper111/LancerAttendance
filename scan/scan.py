@@ -88,7 +88,7 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-    time.sleep(0.0025) # fps control
+    time.sleep(0.00025) # fps control
 
 cap.release()
 cv2.destroyAllWindows()
