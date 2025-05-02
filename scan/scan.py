@@ -22,6 +22,7 @@ last_scanned = time.time()
 while True:
     ret, frame = cap.read()
     print("capturing frame")
+    cv2.imshow("Camera", frame)
 
     if not ret:
         print("failed to capture frame, OK")
@@ -29,11 +30,11 @@ while True:
 
     try:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
         thresh = cv2.adaptiveThreshold(
-            gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-            cv2.THRESH_BINARY, 11, 2
+            blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+            cv2.THRESH_BINARY, 15, 3
         )
-        cv2.imshow("Camera", thresh)
         name, points, _ = qr_detector.detectAndDecode(thresh)
         if not name:
             print("No QR code detected")
@@ -72,6 +73,9 @@ while True:
             last_scanned = time.time()
             time.sleep(3)
             set_status(0, "")
+            for _ in range(int(3 / 0.1)):
+                cap.read()
+                time.sleep(0.1)
         except:
             continue
 
