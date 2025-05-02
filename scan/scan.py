@@ -92,7 +92,7 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-    time.sleep(0.05)  # so its not like 43294823904 fps
+    time.sleep(0.005) # fps control
 
 cap.release()
 cv2.destroyAllWindows()
