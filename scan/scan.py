@@ -31,7 +31,7 @@ while True:
 
     try:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        processed = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+        processed = cv2.resize(gray, None, fx=1.5, fy=1.5, interpolation=cv2.INTER_CUBIC)
     except Exception as e:
         print(f"QR Decode Error: {e}")
         processed = None
