@@ -31,11 +31,7 @@ while True:
 
     try:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
-        equalized = clahe.apply(gray)
-        blurred = cv2.GaussianBlur(equalized, (3, 3), 0)
-        sharpened = cv2.addWeighted(equalized, 1.5, blurred, -0.5, 0)
-        processed = cv2.resize(sharpened, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+        processed = cv2.resize(gray, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
     except Exception as e:
         print(f"QR Decode Error: {e}")
         processed = None
