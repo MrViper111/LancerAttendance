@@ -58,7 +58,7 @@ while True:
             print(f"Name found: {name}")
             try:
                 url = f"http://0.0.0.0:8080/api/get_user?name={name}"
-                response = requests.get(url, timeout=2)
+                response = requests.get(url)
 
                 if response.json().get("response") is None:
                     print("User does not exist")

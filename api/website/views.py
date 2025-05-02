@@ -111,7 +111,7 @@ def get_user():
     return {"status": 200, "response": users.get({"name": name})}
 
 
-@views.route("api/check_in")
+@views.route("api/check_in", methods=["POST"])
 def check_in():
     data = request.get_json(silent=True)
     email = data.get("email")
