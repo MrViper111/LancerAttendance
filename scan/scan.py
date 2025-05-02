@@ -21,6 +21,7 @@ last_scanned = time.time()
 while True:
     ret, frame = cap.read()
     print("capturing frame")
+    cv2.imshow("Camera", frame)
 
     if not ret:
         print("failed to capture frame, OK")
