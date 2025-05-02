@@ -71,7 +71,7 @@ while True:
                 email = response.json()["response"]["email"]
                 url = "http://0.0.0.0:8080/api/check_in"
                 data = {"email": email}
-                response = requests.post(url, json=data, timeout=2)
+                response = requests.post(url, json=data)
 
                 eel.reloadPage()
                 time.sleep(0.1)
@@ -92,7 +92,7 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-    time.sleep(0.1)  # so its not like 43294823904 fps
+    time.sleep(0.2)  # so its not like 43294823904 fps
 
 cap.release()
 cv2.destroyAllWindows()
