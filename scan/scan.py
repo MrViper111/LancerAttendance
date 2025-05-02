@@ -16,6 +16,8 @@ eel_thread = threading.Thread(target=eel.start, args=("index.html",), kwargs={"h
 eel_thread.start()
 
 cap = cv2.VideoCapture(0)
+cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 qr_detector = cv2.QRCodeDetector()
 last_scanned = time.time()
 
@@ -29,15 +31,9 @@ while True:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
         equalized = clahe.apply(gray)
-        blurred = cv2.GaussianBlur(equalized, (5, 5), 0)
+        blurred = cv2.GaussianBlur(equalized, (3, 3), 0)
         sharpened = cv2.addWeighted(equalized, 1.5, blurred, -0.5, 0)
-        resized = cv2.resize(sharpened, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-        thresh = cv2.adaptiveThreshold(
-            resized, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
-            cv2.THRESH_BINARY, 15, 3
-        )
-        kernel = np.ones((3, 3), np.uint8)
-        processed = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
+        processed = cv2.resize(sharpened, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
     except Exception as e:
         print(f"QR Decode Error: {e}")
         processed = None
