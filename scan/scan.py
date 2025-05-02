@@ -4,6 +4,7 @@ import threading
 import cv2
 import eel
 import requests
+import numpy as np
 
 eel.init("web")
 
@@ -28,7 +29,12 @@ while True:
         continue
 
     try:
-        name, points, _ = qr_detector.detectAndDecode(frame)
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        thresh = cv2.adaptiveThreshold(
+            gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+            cv2.THRESH_BINARY, 11, 2
+        )
+        name, points, _ = qr_detector.detectAndDecode(thresh)
         if not name:
             print("No QR code detected")
     except Exception as e:
