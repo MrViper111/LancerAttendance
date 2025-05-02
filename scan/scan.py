@@ -20,6 +20,8 @@ cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 qr_detector = cv2.QRCodeDetector()
 last_scanned = time.time()
+cv2.namedWindow("Processed", cv2.WINDOW_NORMAL)
+cv2.resizeWindow("Processed", 640, 480)
 
 while True:
     ret, frame = cap.read()
@@ -46,6 +48,10 @@ while True:
             continue
 
         name, points, _ = qr_detector.detectAndDecode(processed)
+        if points is not None:
+            pts = points[0].astype(int)
+            x, y, w, h = cv2.boundingRect(pts)
+            cv2.rectangle(processed, (x, y), (x + w, y + h), (0, 255, 0), 2)
         if not name:
             print("No QR code detected")
         else:
