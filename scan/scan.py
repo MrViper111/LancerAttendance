@@ -28,8 +28,9 @@ while True:
     try:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+        sharpened = cv2.addWeighted(gray, 1.5, blurred, -0.5, 0)
         thresh = cv2.adaptiveThreshold(
-            blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+            sharpened, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
             cv2.THRESH_BINARY, 15, 3
         )
         kernel = np.ones((3, 3), np.uint8)
