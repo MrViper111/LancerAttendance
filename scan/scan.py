@@ -27,10 +27,13 @@ while True:
 
     try:
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-        sharpened = cv2.addWeighted(gray, 1.5, blurred, -0.5, 0)
+        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+        equalized = clahe.apply(gray)
+        blurred = cv2.GaussianBlur(equalized, (5, 5), 0)
+        sharpened = cv2.addWeighted(equalized, 1.5, blurred, -0.5, 0)
+        resized = cv2.resize(sharpened, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
         thresh = cv2.adaptiveThreshold(
-            sharpened, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
+            resized, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
             cv2.THRESH_BINARY, 15, 3
         )
         kernel = np.ones((3, 3), np.uint8)
