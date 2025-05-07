@@ -13,62 +13,65 @@ MIFARE_CMD_AUTH_A = 0x60
 KEY_DEFAULT = b'\xFF\xFF\xFF\xFF\xFF\xFF'
 BLOCK = 4
 
-def write_card(input_string):
-    data = hashlib.md5(input_string.encode()).digest()  # 16 bytes
+class CardScanner:
 
-    print("Place card to write...")
+    @staticmethod
+    def write_card(input_string):
+        data = hashlib.md5(input_string.encode()).digest()  # 16 bytes
 
-    while True:
-        uid = pn532.read_passive_target(timeout=0.5)
-        if uid:
-            print("UID:", [hex(x) for x in uid])
-            if len(uid) != 4:
-                print("This card is not a MIFARE Classic tag. Aborting.")
+        print("Place card to write...")
+
+        while True:
+            uid = pn532.read_passive_target(timeout=0.5)
+            if uid:
+                print("UID:", [hex(x) for x in uid])
+                if len(uid) != 4:
+                    print("This card is not a MIFARE Classic tag. Aborting.")
+                    return False
+
+                if not pn532.mifare_classic_authenticate_block(uid, BLOCK, MIFARE_CMD_AUTH_A, KEY_DEFAULT):
+                    print("Authentication failed.")
+                    return False
+
+                for attempt in range(1, 4):
+                    success = pn532.mifare_classic_write_block(BLOCK, data)
+                    if success:
+                        print(f"Successfully wrote to block {BLOCK} on attempt {attempt}")
+                        return True
+                    else:
+                        print(f"Write attempt {attempt} failed.")
+                        time.sleep(0.1)
+
+                print("Write failed after 3 attempts.")
                 return False
 
-            if not pn532.mifare_classic_authenticate_block(uid, BLOCK, MIFARE_CMD_AUTH_A, KEY_DEFAULT):
-                print("Authentication failed.")
-                return False
+            time.sleep(0.1)
 
-            for attempt in range(1, 4):
-                success = pn532.mifare_classic_write_block(BLOCK, data)
-                if success:
-                    print(f"Successfully wrote to block {BLOCK} on attempt {attempt}")
-                    return True
+    @staticmethod
+    def read_card():
+        print("Place card to read...")
+
+        while True:
+            uid = pn532.read_passive_target(timeout=0.5)
+            if uid:
+                print("UID:", [hex(x) for x in uid])
+                if len(uid) != 4:
+                    print("This card is not a MIFARE Classic tag. Aborting.")
+                    return None
+
+                if not pn532.mifare_classic_authenticate_block(uid, BLOCK, MIFARE_CMD_AUTH_A, KEY_DEFAULT):
+                    print("Authentication failed.")
+                    return None
+
+                block_data = pn532.mifare_classic_read_block(BLOCK)
+                if block_data:
+                    print("Read success.")
+                    return bytes(block_data)
                 else:
-                    print(f"Write attempt {attempt} failed.")
-                    time.sleep(0.1)
+                    print("Read failed.")
+                    return None
 
-            print("Write failed after 3 attempts.")
-            return False
-
-        time.sleep(0.1)
-
-
-def read_card():
-    print("Place card to read...")
-
-    while True:
-        uid = pn532.read_passive_target(timeout=0.5)
-        if uid:
-            print("UID:", [hex(x) for x in uid])
-            if len(uid) != 4:
-                print("This card is not a MIFARE Classic tag. Aborting.")
-                return None
-
-            if not pn532.mifare_classic_authenticate_block(uid, BLOCK, MIFARE_CMD_AUTH_A, KEY_DEFAULT):
-                print("Authentication failed.")
-                return None
-
-            block_data = pn532.mifare_classic_read_block(BLOCK)
-            if block_data:
-                print("Read success.")
-                return bytes(block_data)
-            else:
-                print("Read failed.")
-                return None
-
-        time.sleep(0.1)
+            time.sleep(0.1)
 
 if __name__ == "__main__":
     action = int(input("Action (read:0, write:1): "))
