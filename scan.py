@@ -1,56 +1,25 @@
-import cv2
-import time
-import requests
-import threading
+import smbus2
+from adafruit_pn532.i2c import PN532_I2C
 
+pn532 = PN532_I2C(smbus2.SMBus(1))
+pn532.SAM_configuration()
 
-def scan_qr_code():
-    cap = cv2.VideoCapture(0)
-    qr_detector = cv2.QRCodeDetector()
-    last_scanned = time.time()
+key = b'\xFF\xFF\xFF\xFF\xFF\xFF'
+block = 4  # Avoid trailer blocks: 3, 7, 11, ...
+data = b'Hello NFC!\x00\x00\x00\x00\x00'  # Must be exactly 16 bytes
 
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            continue
+print("Place card to write...")
 
-        try:
-            name, points, _ = qr_detector.detectAndDecode(frame)
-        except:
-            pass
-
-        if name:
-            if time.time() - last_scanned <= 3:
-                continue
-            last_scanned = time.time()
-
-            url = f"http://0.0.0.0:8080/api/get_user?name={name}"
-            response = requests.get(url)
-            print(name)
-
-            if response.json()["response"] is None:
-                print("User does not exist")
-                continue
-
-            email = response.json()["response"]["email"]
-
-            url = "http://0.0.0.0:8080/api/check_in"
-            data = {"email": email}
-            response = requests.get(url, json=data)
-            print(response.json())
-
-            if response.json()["response"] == "Checked out":
-                print(f"Checked out: {name}")
+while True:
+    uid = pn532.read_passive_target(timeout=0.5)
+    if uid:
+        print("UID:", [hex(x) for x in uid])
+        if pn532.mifare_classic_authenticate_block(uid, block, PN532_I2C.MIFARE_CMD_AUTH_A, key):
+            success = pn532.mifare_classic_write_block(block, data)
+            if success:
+                print("Successfully wrote to block", block)
             else:
-                print(f"Check-in successful: {name}")
-
-        cv2.imshow("QR Scanner", frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-
-    cap.release()
-    cv2.destroyAllWindows()
-
-
-if __name__ == "__main__":
-    scan_qr_code()
+                print("Write failed.")
+        else:
+            print("Authentication failed.")
+        break
