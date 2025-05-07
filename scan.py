@@ -1,12 +1,15 @@
-import smbus2
+import board
+import busio
 from adafruit_pn532.i2c import PN532_I2C
+import hashlib
 
-pn532 = PN532_I2C(smbus2.SMBus(1))
+i2c = busio.I2C(board.SCL, board.SDA)
+pn532 = PN532_I2C(i2c, debug=False)
 pn532.SAM_configuration()
 
 key = b'\xFF\xFF\xFF\xFF\xFF\xFF'
-block = 4  # Avoid trailer blocks: 3, 7, 11, ...
-data = b'Hello NFC!\x00\x00\x00\x00\x00'  # Must be exactly 16 bytes
+block = 4  # Do not use trailer blocks (3, 7, 11, ...)
+data = hashlib.md5("dsachmanyan25".encode()).digest()  # Exactly 16 bytes
 
 print("Place card to write...")
 
