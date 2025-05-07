@@ -21,15 +21,22 @@ while True:
     uid = pn532.read_passive_target(timeout=0.5)
     if uid:
         print("UID:", [hex(x) for x in uid])
-        # Authenticate
-        if pn532.mifare_classic_authenticate_block(uid, block, MIFARE_CMD_AUTH_A, key):
-            # Write
-            success = pn532.mifare_classic_write_block(block, data)
-            if success:
-                print("Successfully wrote to block", block)
+
+        if len(uid) != 4:
+            print("This card is not a MIFARE Classic tag. Aborting.")
+            break
+        try:
+            # Authenticate
+            if pn532.mifare_classic_authenticate_block(uid, block, MIFARE_CMD_AUTH_A, key):
+                # Write
+                success = pn532.mifare_classic_write_block(block, data)
+                if success:
+                    print("Successfully wrote to block", block)
+                else:
+                    print("Write failed.")
             else:
-                print("Write failed.")
-        else:
-            print("Authentication failed.")
+                print("Authentication failed.")
+        except RuntimeError as e:
+            print(f"Operation failed: {e}")
         break
     time.sleep(0.1)
