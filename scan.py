@@ -9,33 +9,74 @@ i2c = busio.I2C(board.SCL, board.SDA)
 pn532 = PN532_I2C(i2c, debug=False)
 pn532.SAM_configuration()
 
-# Constants
 MIFARE_CMD_AUTH_A = 0x60
-key = b'\xFF\xFF\xFF\xFF\xFF\xFF'
-block = 4  # Avoid trailer blocks
-data = hashlib.md5("dsachmanyan25".encode()).digest()  # 16 bytes
+KEY_DEFAULT = b'\xFF\xFF\xFF\xFF\xFF\xFF'
+BLOCK = 4
 
-print("Place card to write...")
+def write_card(input_string):
+    data = hashlib.md5(input_string.encode()).digest()  # 16 bytes
 
-while True:
-    uid = pn532.read_passive_target(timeout=0.5)
-    if uid:
-        print("UID:", [hex(x) for x in uid])
-        if len(uid) != 4:
-            print("This card is not a MIFARE Classic tag. Aborting.")
-            break
-        try:
-            # Authenticate
-            if pn532.mifare_classic_authenticate_block(uid, block, MIFARE_CMD_AUTH_A, key):
-                # Write
-                success = pn532.mifare_classic_write_block(block, data)
-                if success:
-                    print("Successfully wrote to block", block)
-                else:
-                    print("Write failed.")
-            else:
+    print("Place card to write...")
+
+    while True:
+        uid = pn532.read_passive_target(timeout=0.5)
+        if uid:
+            print("UID:", [hex(x) for x in uid])
+            if len(uid) != 4:
+                print("This card is not a MIFARE Classic tag. Aborting.")
+                return False
+
+            if not pn532.mifare_classic_authenticate_block(uid, BLOCK, MIFARE_CMD_AUTH_A, KEY_DEFAULT):
                 print("Authentication failed.")
-        except RuntimeError as e:
-            print(f"Operation failed: {e}")
-        break
-    time.sleep(0.1)
+                return False
+
+            for attempt in range(1, 4):
+                success = pn532.mifare_classic_write_block(BLOCK, data)
+                if success:
+                    print(f"Successfully wrote to block {BLOCK} on attempt {attempt}")
+                    return True
+                else:
+                    print(f"Write attempt {attempt} failed.")
+                    time.sleep(0.1)
+
+            print("Write failed after 3 attempts.")
+            return False
+
+        time.sleep(0.1)
+
+
+def read_card():
+    print("Place card to read...")
+
+    while True:
+        uid = pn532.read_passive_target(timeout=0.5)
+        if uid:
+            print("UID:", [hex(x) for x in uid])
+            if len(uid) != 4:
+                print("This card is not a MIFARE Classic tag. Aborting.")
+                return None
+
+            if not pn532.mifare_classic_authenticate_block(uid, BLOCK, MIFARE_CMD_AUTH_A, KEY_DEFAULT):
+                print("Authentication failed.")
+                return None
+
+            block_data = pn532.mifare_classic_read_block(BLOCK)
+            if block_data:
+                print("Read success.")
+                return bytes(block_data)
+            else:
+                print("Read failed.")
+                return None
+
+        time.sleep(0.1)
+
+if __name__ == "__main__":
+    action = int(input("Action (read:0, write:1): "))
+
+    if action == 0:
+        print(read_card())
+
+    if action == 1:
+        card_input = input("String to write: ")
+        write_card(card_input)
+
