@@ -1,14 +1,11 @@
 import asyncio
 import time
 import threading
-import cv2
 import eel
 import requests
 import numpy as np
 
-import scan.scan
-
-from scan import CardScanner
+from cardscanner import CardScanner
 
 eel.init("web")
 
@@ -19,13 +16,7 @@ def set_status(status, name):
 eel_thread = threading.Thread(target=eel.start, args=("index.html",), kwargs={"host": "0.0.0.0"}, daemon=True)
 eel_thread.start()
 
-cap = cv2.VideoCapture(0)
-cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
-cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
-qr_detector = cv2.QRCodeDetector()
 last_scanned = time.time()
-cv2.namedWindow("Processed", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Processed", 640, 480)
 
 while True:
 
