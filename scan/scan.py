@@ -52,13 +52,11 @@ while True:
                 user_data = users[i]
 
         if not user_data:
-            break
+            continue
 
         url = "http://0.0.0.0:8080/api/check_in"
         data = {"id": user_data["id"]}
         response = requests.post(url, json=data).json()
-
-        eel.reloadPage()
 
         if response["response"] == "Checked out":
             set_status(-1, user_data["name"])
