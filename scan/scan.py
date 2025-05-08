@@ -67,4 +67,4 @@ while True:
 
         time.sleep(3)
         set_status(0, "")
-        eel.refreshPage()
+        eel.reloadPage()
