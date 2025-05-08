@@ -119,7 +119,7 @@ def check_in():
     print("checking in ", id)
 
     checked_in = users.check_in(id)
-    return {"status": 200, "response": "Checked in" if checked_in else "Checked out"}
+    return jsonify({"status": 200, "response": "Checked in" if checked_in else "Checked out"})
 
 
 @views.route("api/is_present")
