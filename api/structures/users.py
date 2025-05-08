@@ -67,7 +67,6 @@ class Users:
         self.collection.replace_one(filter, document)
 
     def check_in(self, id: str):
-        print("_ checking in user", id)
         filter = {"id": id}
         document = self.collection.find_one(filter)
 
