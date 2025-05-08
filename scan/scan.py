@@ -11,15 +11,19 @@ eel.init("web")
 def set_status(status, name):
     eel.changeStatus(status, name)
 
-eel_thread = threading.Thread(target=eel.start, args=("index.html",), kwargs={"host": "0.0.0.0"}, daemon=True)
+eel_thread = threading.Thread(
+    target=eel.start,
+    args=("index.html",),
+    kwargs={"host": "0.0.0.0"},
+    daemon=True
+)
 eel_thread.start()
+
 time.sleep(2)
 
 last_scanned = 0
 
 while True:
-    set_status(0, "")
-
     if CardScanner.read_card():
         print("found")
 
