@@ -116,8 +116,6 @@ def check_in():
     data = request.get_json(silent=True)
     id = data.get("id")
 
-    print("checking in ", id)
-
     checked_in = users.check_in(id)
     return jsonify({"status": 200, "response": "Checked in" if checked_in else "Checked out"})
 

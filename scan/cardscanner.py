@@ -58,25 +58,32 @@ class CardScanner:
         while True:
             uid = pn532.read_passive_target(timeout=0.5)
 
-            if uid:
-                print("UID:", [hex(x) for x in uid])
-                if len(uid) != 4:
-                    print("This card is not a MIFARE Classic tag. Aborting.")
-                    return None
+            if not uid:
+                time.sleep(0.1)
+                continue
 
-                if not pn532.mifare_classic_authenticate_block(uid, BLOCK, MIFARE_CMD_AUTH_A, KEY_DEFAULT):
-                    print("Authentication failed.")
-                    return None
+            print("UID:", [hex(x) for x in uid])
 
-                block_data = pn532.mifare_classic_read_block(BLOCK)
-                if block_data:
-                    print("Read success.")
-                    return bytes(block_data)
-                else:
-                    print("Read failed.")
-                    return None
+            if len(uid) != 4:
+                print("This card is not a MIFARE Classic tag. Aborting.")
+                return None
 
-            time.sleep(0.1)
+            if not pn532.mifare_classic_authenticate_block(uid, BLOCK, MIFARE_CMD_AUTH_A, KEY_DEFAULT):
+                print("Authentication failed.")
+                return None
+
+            block_data = pn532.mifare_classic_read_block(BLOCK)
+            if not block_data:
+                print("Read failed.")
+                return None
+
+            print("Read success.")
+
+            while pn532.read_passive_target(timeout=0.5):
+                time.sleep(0.1)
+
+            return bytes(block_data)
+
 
 if __name__ == "__main__":
     action = int(input("Action (read:0, write:1): "))
