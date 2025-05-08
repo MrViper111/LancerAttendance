@@ -11,7 +11,18 @@ eel.init("web")
 def set_status(status, name):
     eel.changeStatus(status, name)
 
-eel_thread = threading.Thread(target=eel.start, args=("index.html",), kwargs={"host": "0.0.0.0"}, daemon=True)
+eel_thread = threading.Thread(
+    target=eel.start,
+    args=("index.html",),
+    kwargs={
+        "host": "0.0.0.0",
+        "port": 8000,
+        "mode": "/usr/bin/firefox",
+        "cmdline_args": ["--kiosk"]
+    },
+    daemon=True
+)
+
 eel_thread.start()
 time.sleep(1)
 
@@ -42,7 +53,7 @@ while True:
 
         print("RESPONSE", response)
 
-        if response.get("response") == "Checked out":
+        if response["response"] == "Checked out":
             set_status(-1, user_data["name"])
         else:
             set_status(1, user_data["name"])
