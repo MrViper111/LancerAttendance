@@ -65,7 +65,5 @@ while True:
         else:
             set_status(1, user_data["name"])
 
-        eel.reloadPage()
-
-        time.sleep(5)
+        time.sleep(3)
         set_status(0, "")
