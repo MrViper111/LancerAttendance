@@ -21,7 +21,7 @@ async function fetchUsers() {
 }
 
 function hasCheckedIn(email) {
-  return fetch("http://0.0.0.0:8080/api/is_present?email=" + email)
+  return fetch("http://0.0.0.0:8080/api/is_present?id=" + email)
     .then(response => response.json())
     .then(data => data.response);
 }
@@ -36,7 +36,7 @@ async function renderUsers() {
   tableBody.innerHTML = "";
   for (const user of users) {
     try {
-      const present = await hasCheckedIn(user.email);
+      const present = await hasCheckedIn(user.id);
       const iconHtml = present
         ? "<i class='bi bi-check' style='color:#3acc00'></i>"
         : "<i class='bi bi-x' style='color:#e00000'></i>";
@@ -44,7 +44,7 @@ async function renderUsers() {
       const td = document.createElement("td");
       td.innerHTML =
         "<div class='container1 inline-container'>" +
-          "<p>" + user.name + " <span class='lesser'>(" + user.email + ")</span></p>" +
+          "<p>" + user.name + " <span class='lesser'>(" + user.id + ")</span></p>" +
           "<div class='inline-container'>" +
             "<p>Checked in</p>" +
             "<h1>" + iconHtml + "</h1>" +
