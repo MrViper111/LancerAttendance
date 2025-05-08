@@ -38,7 +38,7 @@ while True:
 
         url = "http://0.0.0.0:8080/api/check_in"
         data = {"id": user_data["id"]}
-        response = requests.get(url, json=data).json()
+        response = requests.post(url, json=data).json()
 
         if response.get("response") == "Checked out":
             set_status(-1, user_data["name"])
