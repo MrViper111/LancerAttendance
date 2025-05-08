@@ -2,6 +2,7 @@ import time
 import threading
 import eel
 import requests
+import os
 
 from cardscanner import CardScanner
 
@@ -15,7 +16,7 @@ eel_thread = threading.Thread(
     target=eel.start,
     args=("index.html",),
     kwargs={
-        "host": "localhost",
+        "host": "0.0.0.0",
         "port": 8000,
         "mode": "/snap/bin/chromium",
         "cmdline_args": [
@@ -28,7 +29,6 @@ eel_thread = threading.Thread(
     },
     daemon=True
 )
-
 
 eel_thread.start()
 time.sleep(1)
