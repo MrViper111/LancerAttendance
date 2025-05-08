@@ -21,9 +21,11 @@ while True:
     users = requests.get("http://0.0.0.0:8080/api/get_users").json()["response"]
     hashed_ids = [CardScanner.hash_str(user["id"]) for user in users]
 
+    print(users)
+
     card_value = CardScanner.read_card()
     if card_value:
-        print("found")
+        print("found", str(card_value))
 
         user_data = None
         for i, hashed_id in enumerate(hashed_ids):
