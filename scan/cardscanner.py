@@ -77,9 +77,9 @@ if __name__ == "__main__":
     action = int(input("Action (read:0, write:1): "))
 
     if action == 0:
-        print(read_card())
+        print(CardScanner.read_card())
 
     if action == 1:
         card_input = input("String to write: ")
-        write_card(card_input)
+        CardScanner.write_card(card_input)
 
