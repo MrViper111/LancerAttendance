@@ -15,7 +15,7 @@ eel_thread = threading.Thread(
     target=eel.start,
     args=("index.html",),
     kwargs={
-        "host": "0.0.0.0",
+        "host": "localhost",
         "port": 8000,
         "mode": "/usr/bin/firefox",
         "cmdline_args": ["--new-window"]
