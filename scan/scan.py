@@ -22,6 +22,7 @@ while True:
     hashed_ids = [CardScanner.hash_str(user["id"]) for user in users]
 
     print(users)
+    print(hashed_ids)
 
     card_value = CardScanner.read_card()
     if card_value:
