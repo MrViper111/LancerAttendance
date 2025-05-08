@@ -125,7 +125,7 @@ def is_checked_in():
     id = request.args.get("id")
     user = users.get({"id": id})
 
-    if not user["attendance"]:
+    if not user.get("attendance"):
         return {"status": 200, "response": False}
 
     last_obj = user["attendance"][-1]
