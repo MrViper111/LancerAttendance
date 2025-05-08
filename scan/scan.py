@@ -18,7 +18,7 @@ eel_thread = threading.Thread(
         "host": "0.0.0.0",
         "port": 8000,
         "mode": "/usr/bin/firefox",
-        "cmdline_args": ["--kiosk"]
+        "cmdline_args": ["--new-window"]
     },
     daemon=True
 )
