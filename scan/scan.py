@@ -11,17 +11,7 @@ eel.init("web")
 def set_status(status, name):
     eel.changeStatus(status, name)
 
-eel_thread = threading.Thread(
-    target=eel.start,
-    args=("index.html",),
-    kwargs={
-        "host": "0.0.0.0",
-        "mode": "chrome",
-        "cmdline_args": ["--start-fullscreen"]
-    },
-    daemon=True
-)
-
+eel_thread = threading.Thread(target=eel.start, args=("index.html",), kwargs={"host": "0.0.0.0"}, daemon=True)
 eel_thread.start()
 time.sleep(1)
 
