@@ -13,6 +13,7 @@ def set_status(status, name):
 
 eel_thread = threading.Thread(target=eel.start, args=("index.html",), kwargs={"host": "0.0.0.0"}, daemon=True)
 eel_thread.start()
+time.sleep(2)
 
 last_scanned = 0
 
