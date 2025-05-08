@@ -17,11 +17,18 @@ eel_thread = threading.Thread(
     kwargs={
         "host": "localhost",
         "port": 8000,
-        "mode": "/usr/bin/firefox",
-        "cmdline_args": ["--new-window"]
+        "mode": "/snap/bin/chromium",
+        "cmdline_args": [
+            "--kiosk",
+            "--no-sandbox",
+            "--disable-dev-shm-usage",
+            "--disable-gpu",
+            "--disable-software-rasterizer"
+        ]
     },
     daemon=True
 )
+
 
 eel_thread.start()
 time.sleep(1)
