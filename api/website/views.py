@@ -39,9 +39,9 @@ def login():
 def admin_home():
     return redirect("/login")
 
-@views.route("admin/profile/<name>")
-def admin_profile(name):
-    return render_template("profile.html", name=name)
+@views.route("admin/profile/<id>")
+def admin_profile(id):
+    return render_template("profile.html", id=id)
 
 # the api stuff
 
@@ -58,26 +58,26 @@ def create_user():
         return jsonify({"status": 400, "response": "Invalid JSON body"})
 
     name = data.get("name")
-    email = data.get("email")
+    id = data.get("id")
     position = data.get("position")
 
-    created = users.create(name, email, position, False)
+    created = users.create(name, id, position, False)
     if created:
         return jsonify({"status": 201, "response": "User created"})
     else:
-        return jsonify({"status": 409, "response": "User with email already exists"})
+        return jsonify({"status": 409, "response": "User with ID already exists"})
 
 
 @views.route("api/update_user", methods=["PUT"])
 def update_user():
     data = request.get_json(silent=True)
 
-    email = data.get("email")
+    id = data.get("id")
     position = data.get("position")
     score = data.get("score")
     admin = data.get("admin")
 
-    updated = users.update(email, position, score, admin)
+    updated = users.update(id, position, score, admin)
     if updated:
         return jsonify({"status": 201, "response": "User updated"})
     else:
@@ -91,9 +91,9 @@ def delete_user():
     if not data:
         return jsonify({"status": 400, "response": "Invalid JSON body"})
 
-    email = data.get("email")
+    id = data.get("id")
 
-    deleted = users.delete(email)
+    deleted = users.delete(id)
     if deleted:
         return jsonify({"status": 200, "response": "User deleted"})
     else:
@@ -107,23 +107,23 @@ def get_users():
 
 @views.route("api/get_user")
 def get_user():
-    name = request.args.get("name").lower().title()
-    return {"status": 200, "response": users.get({"name": name})}
+    id = request.args.get("id")
+    return {"status": 200, "response": users.get({"id": id})}
 
 
 @views.route("api/check_in", methods=["POST"])
 def check_in():
     data = request.get_json(silent=True)
-    email = data.get("email")
+    id = data.get("id")
 
-    checked_in = users.check_in(email)
+    checked_in = users.check_in(id)
     return {"status": 200, "response": "Checked in" if checked_in else "Checked out"}
 
 
 @views.route("api/is_present")
 def is_checked_in():
-    email = request.args.get("email")
-    user = users.get({"email": email})
+    id = request.args.get("id")
+    user = users.get({"id": id})
 
     if not user["attendance"]:
         return {"status": 200, "response": False}

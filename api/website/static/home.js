@@ -31,7 +31,7 @@ async function createUserCard(user, position) {
     score.innerHTML = "Score: <b>" + user.score + "</b>"
 
     const email = document.createElement("div")
-    email.innerHTML = " <span class='lesser'>" + user.email + "</span>"
+    email.innerHTML = " <span class='lesser'>" + user.id + "@lasallehs.org</span>"
 
     critical.appendChild(score);
     critical.appendChild(email);

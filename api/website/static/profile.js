@@ -1,8 +1,8 @@
 userData = null;
 
-async function fetchUser(name) {
+async function fetchUser(id) {
     try {
-        const response = await fetch('/api/get_user?name=' + name.replace("_", " "));
+        const response = await fetch('/api/get_user?id=' + id);
         if (!response.ok) throw new Error('Failed to fetch user');
 
         const jsonData = await response.json();
@@ -48,7 +48,7 @@ function updateUserProfile(user) {
   // Each child <div> has 2 <p> tags: the second <p> is the actual data.
   // 0 => Name, 1 => Email, 2 => Position, 3 => Score.
   profileContainer.children[0].getElementsByTagName("p")[1].textContent = user.name;
-  profileContainer.children[1].getElementsByTagName("p")[1].textContent = user.email;
+  profileContainer.children[1].getElementsByTagName("p")[1].textContent = user.id;
   profileContainer.children[2].getElementsByTagName("p")[1].textContent = user.position;
   profileContainer.children[3].getElementsByTagName("p")[1].textContent = user.score;
 }

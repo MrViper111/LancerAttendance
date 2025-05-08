@@ -13,7 +13,7 @@ function createUser() {
         method: "POST",
         body: JSON.stringify({
             name: name_input.value,
-            email: email_input.value,
+            id: email_input.value,
             position: position_input.value
         }),
         headers: {
@@ -35,7 +35,7 @@ function saveUser(email, position, score) {
     fetch("/api/update_user", {
         method: "PUT",
         body: JSON.stringify({
-            email: email,
+            id: email,
             position: position,
             score: score,
             admin: false
@@ -54,7 +54,7 @@ function deleteUser(email) {
     fetch("/api/delete_user", {
         method: "DELETE",
         body: JSON.stringify({
-            email: email
+            id: email
         }),
         headers: {
             "Content-type": "application/json; charset=UTF-8"
@@ -79,7 +79,7 @@ async function fetchUsers() {
 }
 
 function hasCheckedIn(email) {
-    return fetch("/api/is_present?email=" + email)
+    return fetch("/api/is_present?id=" + email)
         .then(response => response.json())
         .then(data => data.response);
 }
@@ -92,7 +92,7 @@ function createUserCard(userData) {
 
     // Create user info paragraph
     let userInfo = document.createElement("p");
-    userInfo.innerHTML = `${userData.name} <span class="lesser">(${userData.email})</span>`;
+    userInfo.innerHTML = `${userData.name} <span class="lesser">(${userData.id})</span>`;
     container.appendChild(userInfo);
 
     // Position section
@@ -130,7 +130,7 @@ function createUserCard(userData) {
     let attendanceMarker = document.createElement("h1");
     attendanceLabel.innerHTML = "<span class='lesser'>Present</span>"
 
-    hasCheckedIn(userData.email).then(result => {
+    hasCheckedIn(userData.id).then(result => {
         if (result) {
             attendanceMarker.innerHTML = "<i class='bi bi-check' style='color:#3acc00'></i>"
         } else {
@@ -149,14 +149,14 @@ function createUserCard(userData) {
     deleteButton.innerHTML = '<i class="bi bi-trash3-fill"></i>';
     deleteButton.onclick = () => {
         container.remove();
-        deleteUser(userData.email);
+        deleteUser(userData.id);
     }
 
     let saveButton = document.createElement("button");
     saveButton.className = "green-button";
     saveButton.textContent = "Save";
     saveButton.onclick = () => {
-        saveUser(userData.email, positionInput.value, Number(scoreInput.value));
+        saveUser(userData.id, positionInput.value, Number(scoreInput.value));
     };
 
     buttonDiv.appendChild(deleteButton);

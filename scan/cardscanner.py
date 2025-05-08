@@ -16,8 +16,12 @@ BLOCK = 4
 class CardScanner:
 
     @staticmethod
+    def hash_str(string: str):
+        return hashlib.md5(string.encode()).digest()
+
+    @staticmethod
     def write_card(input_string):
-        data = hashlib.md5(input_string.encode()).digest()  # 16 bytes
+        data = CardScanner.hash_str(input_string)
 
         print("Place card to write...")
 
@@ -53,6 +57,7 @@ class CardScanner:
 
         while True:
             uid = pn532.read_passive_target(timeout=0.5)
+
             if uid:
                 print("UID:", [hex(x) for x in uid])
                 if len(uid) != 4:

@@ -18,14 +18,31 @@ time.sleep(1)
 last_scanned = 0
 
 while True:
-    set_status(0, "")
+    users = requests.get("http://0.0.0.0:8080/api/get_users").json()["response"]
+    hashed_ids = [CardScanner.hash_str(user["id"]) for user in users]
 
-    if CardScanner.read_card():
+    card_value = CardScanner.read_card()
+    if card_value:
         print("found")
 
-        set_status(1, "something???")
+        user_data = None
+        for i, hashed_id in enumerate(hashed_ids):
+            if hashed_id == card_value:
+                user_data = users[i]
+
+        if not user_data:
+            break
+
+        url = "http://0.0.0.0:8080/api/check_in"
+        data = {"id": user_data["id"]}
+        response = requests.get(url, json=data)
+
+        if response.json().get("response") == "Checked out":
+            set_status(-1, user_data["name"])
+        else:
+            set_status(1, user_data["name"])
+
         eel.reloadPage()
 
-        time.sleep(1)
-
+        time.sleep(3)
         set_status(0, "")

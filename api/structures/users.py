@@ -9,15 +9,15 @@ class Users:
     def __init__(self, collection: Collection):
         self.collection = collection
 
-    def create(self, name: str, email: str, position: str, admin: bool):
-        filter = {"email": email}
+    def create(self, name: str, id: str, position: str, admin: bool):
+        filter = {"id": id}
         document = self.collection.find_one(filter)
 
         if document:
             return False
 
         self.collection.insert_one({
-            "email": email,
+            "id": id,
             "name": name,
             "position": position,
             "admin": admin,
@@ -26,8 +26,8 @@ class Users:
         })
         return True
 
-    def update(self, email: str, position: str = None, score: int = None, admin: bool = False):
-        filter = {"email": email}
+    def update(self, id: str, position: str = None, score: int = None, admin: bool = False):
+        filter = {"id": id}
         document = self.collection.find_one(filter)
 
         if not document:
@@ -40,8 +40,8 @@ class Users:
         self.collection.replace_one(filter, document)
         return True
 
-    def delete(self, email):
-        filter = {"email": email}
+    def delete(self, id):
+        filter = {"id": id}
         document = self.collection.find_one(filter)
 
         if not document:
@@ -56,8 +56,8 @@ class Users:
     def get_all(self):
         return self.collection.find({}, {"_id": 0}).to_list()
 
-    def set_score(self, email: str, score: int):
-        filter = {"email": email}
+    def set_score(self, id: str, score: int):
+        filter = {"id": id}
         document = self.collection.find_one(filter)
 
         if not document:
@@ -66,8 +66,8 @@ class Users:
         document["score"] = score
         self.collection.replace_one(filter, document)
 
-    def check_in(self, email: str):
-        filter = {"email": email}
+    def check_in(self, id: str):
+        filter = {"id": id}
         document = self.collection.find_one(filter)
 
         if not document:
