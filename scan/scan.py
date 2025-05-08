@@ -58,7 +58,7 @@ while True:
         data = {"id": user_data["id"]}
         response = requests.post(url, json=data).json()
 
-        print("RESPONSE", response)
+        eel.reloadPage()
 
         if response["response"] == "Checked out":
             set_status(-1, user_data["name"])
