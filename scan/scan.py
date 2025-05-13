@@ -55,7 +55,7 @@ while True:
             continue
 
         print("ok, finding user data")
-        user_data = requests.get("http://localhost:8080/api/get_user", params={"id": card_value["user_id"]}).json()
+        user_data = requests.get("http://localhost:8080/api/get_user", params={"id": card_data["user_id"]}).json()
 
         url = "http://0.0.0.0:8080/api/check_in"
         data = {"id": user_data["name"]}
