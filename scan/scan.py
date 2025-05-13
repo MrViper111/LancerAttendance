@@ -46,7 +46,9 @@ while True:
         card_data = None
         for i, card in enumerate(cards):
             if card["id"] == card_value:
+                print("match found")
                 card_data = cards[i]
+                break
 
         if not card_data or not card_data["enabled"]:
             continue

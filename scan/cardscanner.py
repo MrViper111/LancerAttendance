@@ -16,13 +16,7 @@ BLOCK = 4
 class CardScanner:
 
     @staticmethod
-    def hash_str(string: str):
-        return hashlib.md5(string.encode()).digest()
-
-    @staticmethod
     def write_card(input_string):
-        data = CardScanner.hash_str(input_string)
-
         print("Place card to write...")
 
         while True:
@@ -38,7 +32,7 @@ class CardScanner:
                     return False
 
                 for attempt in range(1, 4):
-                    success = pn532.mifare_classic_write_block(BLOCK, data)
+                    success = pn532.mifare_classic_write_block(BLOCK, input_string)
                     if success:
                         print(f"Successfully wrote to block {BLOCK} on attempt {attempt}")
                         return True
