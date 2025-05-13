@@ -76,7 +76,7 @@ class CardScanner:
             while pn532.read_passive_target(timeout=0.5):
                 time.sleep(0.1)
 
-            return bytes(block_data)
+            return block_data
 
 
 if __name__ == "__main__":
