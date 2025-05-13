@@ -62,7 +62,8 @@ while True:
         data = {"id": card_data["user_id"]}
 
         print("LALALALAL DATA", data)
-        response = requests.post(url, json=data).json()["response"]
+        response = requests.post(url, json=data).json()
+        print("response", response)
 
         if response["response"] == "Checked out":
             set_status(-1, user_data["name"])
