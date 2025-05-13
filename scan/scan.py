@@ -60,6 +60,8 @@ while True:
 
         url = "http://0.0.0.0:8080/api/check_in"
         data = {"id": card_data["user_id"]}
+
+        print("LALALALAL DATA", data)
         response = requests.post(url, json=data).json()
 
         if response["response"] == "Checked out":
