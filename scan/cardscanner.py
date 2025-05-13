@@ -31,8 +31,15 @@ class CardScanner:
                     print("Authentication failed.")
                     return False
 
+                data = input_string.encode("utf-8")
+                if len(data) > 16:
+                    print("Input string too long for a single block (16 bytes max).")
+                    return False
+
+                padded_data = data.ljust(16, b'\x00')
+
                 for attempt in range(1, 4):
-                    success = pn532.mifare_classic_write_block(BLOCK, input_string)
+                    success = pn532.mifare_classic_write_block(BLOCK, padded_data)
                     if success:
                         print(f"Successfully wrote to block {BLOCK} on attempt {attempt}")
                         return True
@@ -76,8 +83,11 @@ class CardScanner:
             while pn532.read_passive_target(timeout=0.5):
                 time.sleep(0.1)
 
-            return bytes(block_data).decode("utf-8").strip()
-
+            try:
+                return bytes(block_data).decode("utf-8").strip('\x00')
+            except UnicodeDecodeError:
+                print("Invalid UTF-8 data.")
+                return None
 
 if __name__ == "__main__":
     action = int(input("Action (read:0, write:1): "))
