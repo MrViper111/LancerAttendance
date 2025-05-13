@@ -1,5 +1,89 @@
 userData = null;
 
+const style = document.createElement("style");
+style.textContent = `
+  .blue-button.small {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    margin-right: 4px;
+  }
+  .blue-button.small:hover {
+    background-color: #0056b3;
+  }
+`;
+document.head.appendChild(style);
+
+style.textContent += `
+  
+
+  .inline-container button {
+    transition: transform 0.1s ease;
+  }
+
+  
+
+  .container1.inline-container {
+    padding: 12px 16px;
+    margin-bottom: 12px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .container1.inline-container div {
+    min-width: 120px;
+  }
+
+  .container1.inline-container p.lesser {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #666;
+  }
+
+  .container1.inline-container p:not(.lesser) {
+    margin: 4px 0 0;
+    font-weight: 500;
+  }
+
+  .gray-button {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+    margin-right: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .gray-button:hover {
+    background-color: #5a6268;
+  }
+
+  .card-green {
+    border: 2px solid #28a745;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(40, 167, 69, 0.2);
+  }
+  .card-red {
+    border: 2px solid #dc3545;
+    border-radius: 10px;
+    box-shadow: 0 0 8px rgba(220, 53, 69, 0.2);
+  }
+`;
+
 async function fetchUser(id) {
     try {
         const response = await fetch('/api/get_user?id=' + id);
@@ -9,61 +93,35 @@ async function fetchUser(id) {
         userData = jsonData.response;
 
         main();
+        loadUserCards(userData.id); // Fetch cards for user ID (e.g. dsachmanyan25)
 
     } catch (error) {
         console.error('Error fetching users:', error);
     }
 }
 
-// ---------- Step 1: Update user profile info ----------
 function updateUserProfile(user) {
-  // We assume the second ".container1.inline-container" in your HTML
-  // is the one containing Name, Email, Position, and Score:
-  //
-  // <div class="container1 inline-container">
-  //   <div>
-  //     <p class="lesser">Name</p>
-  //     <p>David Sachmanyan</p>
-  //   </div>
-  //   <div>
-  //     <p class="lesser">Email</p>
-  //     <p>dsachmanyan25@lasallehs.org</p>
-  //   </div>
-  //   <div>
-  //     <p class="lesser">Position</p>
-  //     <p>Chairman</p>
-  //   </div>
-  //   <div>
-  //     <p class="lesser">Score</p>
-  //     <p>942</p>
-  //   </div>
-  // </div>
-  //
-  // We'll replace the textContent in those <p> elements with userData.
-
   var containers = document.getElementsByClassName("container1");
-  // The second container with inline-container is index 1 if your HTML structure hasn't changed
   var profileContainer = document.getElementsByClassName("inline-container")[1];
 
-  // Each child <div> has 2 <p> tags: the second <p> is the actual data.
-  // 0 => Name, 1 => Email, 2 => Position, 3 => Score.
   profileContainer.children[0].getElementsByTagName("p")[1].textContent = user.name;
   profileContainer.children[1].getElementsByTagName("p")[1].textContent = user.id;
   profileContainer.children[2].getElementsByTagName("p")[1].textContent = user.position;
   profileContainer.children[3].getElementsByTagName("p")[1].textContent = user.score;
 }
 
-// ---------- Step 2: Helper functions for attendance ----------
-
-// Converts a Unix timestamp (in seconds) to a "H:MM" string.
 function formatTime(timestamp) {
   var date = new Date(timestamp * 1000);
-  var hours = date.getHours() % 12 || 12; // Convert to 12-hour format
+  var hours = date.getHours() % 12 || 12;
   var minutes = date.getMinutes();
   return hours + ":" + (minutes < 10 ? "0" + minutes : minutes);
 }
 
-// Converts a duration (in seconds) to a "hh:mm" string.
+function formatDate(timestamp) {
+  const date = new Date(timestamp * 1000);
+  return date.toLocaleDateString("en-US");
+}
+
 function formatDuration(seconds) {
   var hrs = Math.floor(seconds / 3600);
   var mins = Math.floor((seconds % 3600) / 60);
@@ -72,21 +130,17 @@ function formatDuration(seconds) {
   return hStr + ":" + mStr;
 }
 
-// Returns today's date as "MM/DD/YY".
 function getCurrentDateFormatted() {
   var date = new Date();
   var m = date.getMonth() + 1;
   var d = date.getDate();
   var y = date.getFullYear() % 100;
-
   if (m < 10) m = "0" + m;
   if (d < 10) d = "0" + d;
   if (y < 10) y = "0" + y;
-
   return m + "/" + d + "/" + y;
 }
 
-// Groups attendance records by date (e.g., "03/04/25" => [records...]).
 function groupAttendance(attendanceArray) {
   var groups = {};
   attendanceArray.forEach(function(record) {
@@ -98,32 +152,27 @@ function groupAttendance(attendanceArray) {
   return groups;
 }
 
-// Returns all records in 'attendance' whose date matches 'date'.
 function getRecordsForDate(date, attendance) {
   return attendance.filter(function(record) {
     return record.date === date;
   });
 }
 
-// Creates one "card" (<div class="container1 inline-container">) for a given date and records.
 function createCardForDate(date, records) {
   var currentDate = getCurrentDateFormatted();
   var cardDiv = document.createElement("div");
   cardDiv.className = "container1 inline-container";
 
-  // Calculate total time present.
   var totalSeconds = 0;
   records.forEach(function(record) {
     if (record.out !== null) {
       totalSeconds += (record.out - record.in);
     } else if (date === currentDate) {
-      // No 'out' but it's today => treat as present until now
       var nowInSeconds = Math.floor(Date.now() / 1000);
       totalSeconds += (nowInSeconds - record.in);
     }
   });
 
-  // Build the check-in history. If no records, we'll have no spans.
   var historySpans = "";
   records.forEach(function(record) {
     var inTime = formatTime(record.in);
@@ -132,8 +181,6 @@ function createCardForDate(date, records) {
                     ' <span class="lesser">-</span> ' + outTime + '</span>';
   });
 
-  // If there's no attendance data for the day, we at least show an empty set of spans.
-  // For today's card, we use a specific layout:
   if (date === currentDate) {
     cardDiv.innerHTML = ''
       + '<div>'
@@ -149,7 +196,6 @@ function createCardForDate(date, records) {
       +   historySpans
       + '</div>';
   } else {
-    // Past date layout:
     cardDiv.innerHTML = ''
       + '<div>'
       +   '<span class="lesser">Date: </span> <span>' + date + '</span>'
@@ -165,8 +211,6 @@ function createCardForDate(date, records) {
   return cardDiv;
 }
 
-// ---------- Step 3: Render the attendance cards. ----------
-// ALWAYS create a card for the current date, then create cards for any past dates that exist.
 function renderUsers(user) {
   var container = document.getElementById("attendanceCards");
   if (!container) {
@@ -177,12 +221,10 @@ function renderUsers(user) {
   container.innerHTML = "";
   var currentDate = getCurrentDateFormatted();
 
-  // First, create the card for today's date (always).
   var recordsForToday = getRecordsForDate(currentDate, user.attendance);
   var todayCard = createCardForDate(currentDate, recordsForToday);
   container.appendChild(todayCard);
 
-  // Next, group the attendance by date, and add cards for past dates (i.e. date !== currentDate).
   var groups = groupAttendance(user.attendance);
   for (var date in groups) {
     if (groups.hasOwnProperty(date) && date !== currentDate) {
@@ -212,15 +254,153 @@ function downloadJSON(jsonData) {
     URL.revokeObjectURL(url);
 }
 
+async function generateCardImage(card) {
+  const userRes = await fetch(`/api/get_user?id=${card.user_id}`);
+  const userJson = await userRes.json();
+  const user = userJson.response;
 
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  const base = new Image();
+  base.src = "/static/id.png";
 
+  await new Promise(resolve => base.onload = resolve);
 
-// ---------- Step 4: Main entry point ----------
-function main() {
-  // Update the displayed name, email, position, and score
-  updateUserProfile(userData);
-  // Create the current day card + any past day cards
-  renderUsers(userData);
+  // Wait for fonts to load
+  await document.fonts.load("45px 'Work Sans'");
+  await document.fonts.load("35px 'JetBrains Mono'");
+
+  canvas.width = base.width;
+  canvas.height = base.height;
+  ctx.drawImage(base, 0, 0);
+
+  ctx.fillStyle = "black";
+  ctx.font = "45px 'Work Sans'";
+  ctx.fillText(user.name, 60, 430);
+  ctx.fillText(user.id, 60, 580);
+  ctx.fillText(user.position, 60, 730);
+
+  ctx.fillStyle = "#555555";
+  ctx.font = "35px 'JetBrains Mono'";
+  ctx.fillText(`#${String(card.id).padStart(6, '0')}`, 385, 872);
+  ctx.fillText(card.academic_year, 345, 915);
+
+  const link = document.createElement("a");
+  link.download = `${user.name.replace(/\\s/g, '')}-${card.id}.png`;
+  link.href = canvas.toDataURL("image/png");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
-// ---------- Step 5: Wait until the DOM is ready, then run main ----------
+async function loadUserCards(userId) {
+  const res = await fetch(`/api/get_cards_from?user_id=${userId}`);
+  const data = await res.json();
+  const cards = data.response;
+
+  const container = document.getElementById("cardDisplay");
+  if (!container) return;
+  container.innerHTML = "";
+
+  const header = document.createElement("div");
+  header.className = "inline-container";
+  header.innerHTML = `
+    <p><b>Center ID Cards</b></p>
+    <button class="green-button" onclick="createNewCard()">Create New</button>
+  `;
+
+  container.appendChild(header);
+  container.appendChild(document.createElement("hr"));
+
+  cards.slice().reverse().forEach(card => {
+    const year = card.academic_year;
+    const endYear = parseInt(year.split("-")[1]);
+    const expiresDate = new Date(`${endYear}-05-22T00:00:00`);
+    const today = new Date();
+    const diffDays = Math.ceil((expiresDate - today) / (1000 * 60 * 60 * 24));
+    const expiresStr = expiresDate.toLocaleDateString("en-US") + ` (in ${diffDays} days)`;
+
+    const issuedStr = formatDate(card.issued);
+    const toggleText = card.enabled ? "Deactivate" : "Activate";
+    const toggleClass = card.enabled ? "red-button" : "green-button";
+
+    const div = document.createElement("div");
+    const isExpired = today > expiresDate;
+    const cardStatusClass = (card.enabled && !isExpired) ? "card-green" : "card-red";
+    div.className = `container1 inline-container ${cardStatusClass}`;
+    div.innerHTML = `
+        <div>
+            <p class="lesser">Card ID</p>
+            <p><b>${String(card.id).padStart(6, '0')}</b></p>
+        </div>
+        <div>
+            <p class="lesser">Academic Year</p>
+            <p>${year}</p>
+        </div>
+        <div>
+            <p class="lesser">Expires</p>
+            <p>${expiresStr}</p>
+        </div>
+        <div>
+            <p class="lesser">Issued</p>
+            <p>${issuedStr}</p>
+        </div>
+        <div>
+            <button class="gray-button" onclick='generateCardImage(${JSON.stringify(card)})'>Download</button>
+            <button class="${toggleClass}" onclick="toggleCard('${card.id}', ${!card.enabled})">
+                ${toggleText}
+            </button>
+            <button class="red-button" onclick="deleteCard('${card.id}')">
+                <i class="bi bi-trash3-fill"></i>
+            </button>
+        </div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+async function toggleCard(id, enabled) {
+    await fetch("/api/update_card", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, enabled })
+    });
+    location.reload();
+}
+
+async function deleteCard(id) {
+    await fetch("/api/delete_card", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+    });
+    location.reload();
+}
+
+async function createNewCard() {
+    const year = "2024-2025";
+    const endYear = parseInt(year.split("-")[1]);
+    const expires = `05/22/${String(endYear).slice(-2)}`;
+
+    const res = await fetch("/api/create_card", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            user_id: userData.id,
+            year: year,
+            expires: expires
+        })
+    });
+
+    const result = await res.json();
+    if (result.status === 201) {
+        location.reload();
+    } else {
+        alert("Failed to create card: " + result.response);
+    }
+}
+
+function main() {
+  updateUserProfile(userData);
+  renderUsers(userData);
+}

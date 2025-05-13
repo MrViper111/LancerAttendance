@@ -36,26 +36,26 @@ time.sleep(1)
 last_scanned = 0
 
 while True:
-    users = requests.get("http://0.0.0.0:8080/api/get_users").json()["response"]
-    hashed_ids = [CardScanner.hash_str(user["id"]) for user in users]
-
-    print(users)
-    print(hashed_ids)
+    cards = requests.get("http://0.0.0.0:8080/api/get_cards").json()["response"]
+    print(cards)
 
     card_value = CardScanner.read_card()
     if card_value:
         print("found", str(card_value))
 
-        user_data = None
-        for i, hashed_id in enumerate(hashed_ids):
-            if hashed_id == card_value:
-                user_data = users[i]
+        card_data = None
+        for i, card in enumerate(cards):
+            if card["id"] == card_value:
+                card_data = cards[i]
 
-        if not user_data:
+        if not card_data or not card_data["enabled"]:
             continue
 
+        print("ok, finding user data")
+        user_data = requests.get("http://localhost:8080/api/get_user", params={"id": card_value["user_id"]}).json()
+
         url = "http://0.0.0.0:8080/api/check_in"
-        data = {"id": user_data["id"]}
+        data = {"id": user_data["name"]}
         response = requests.post(url, json=data).json()
 
         if response["response"] == "Checked out":
