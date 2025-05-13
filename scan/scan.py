@@ -45,6 +45,7 @@ while True:
 
         card_data = None
         for i, card in enumerate(cards):
+            print("next iter", card["id"], card_value)
             if card["id"] == card_value:
                 print("match found")
                 card_data = cards[i]
