@@ -94,7 +94,7 @@ if __name__ == "__main__":
 
     card_id = int(input("Card ID (######): "))
 
-    if CardScanner.write_card(card_id):
+    if CardScanner.write_card(str(card_id)):
         print(f"\n{card_id} successfully written to card!\n")
     else:
         print("\nWrite failed, please try again\n")
