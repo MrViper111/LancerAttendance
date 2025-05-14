@@ -92,9 +92,16 @@ if __name__ == "__main__":
     os.system("clear")
     print("\n\nMake sure that you enter the correct card ID for the correct student\n")
 
-    card_id = int(input("Card ID (######): "))
+    while True:
+        card_id = input("Card ID (######): ")
 
-    if CardScanner.write_card(str(card_id)):
+        if not card_id.isdigit() or len(card_id) != 6:
+            print("Invalid card ID, please try again.")
+            continue
+
+        break
+
+    if CardScanner.write_card(card_id):
         print(f"\n{card_id} successfully written to card!\n")
     else:
         print("\nWrite failed, please try again\n")
