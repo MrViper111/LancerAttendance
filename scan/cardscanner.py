@@ -1,3 +1,5 @@
+import os
+
 import board
 import busio
 from adafruit_pn532.i2c import PN532_I2C
@@ -41,13 +43,10 @@ class CardScanner:
                 for attempt in range(1, 4):
                     success = pn532.mifare_classic_write_block(BLOCK, padded_data)
                     if success:
-                        print(f"Successfully wrote to block {BLOCK} on attempt {attempt}")
                         return True
                     else:
-                        print(f"Write attempt {attempt} failed.")
                         time.sleep(0.1)
 
-                print("Write failed after 3 attempts.")
                 return False
 
             time.sleep(0.1)
@@ -90,12 +89,13 @@ class CardScanner:
                 return None
 
 if __name__ == "__main__":
-    action = int(input("Action (read:0, write:1): "))
+    os.system("clear")
+    print("\n\nMake sure that you enter the correct card ID for the correct student\n")
 
-    if action == 0:
-        print(CardScanner.read_card())
+    card_id = int("Card ID (######): ")
 
-    if action == 1:
-        card_input = input("String to write: ")
-        CardScanner.write_card(card_input)
+    if CardScanner.write_card(card_id):
+        print(f"\n{card_id} successfully written to card!\n")
+    else:
+        print("\nWrite failed, please try again\n")
 
