@@ -92,7 +92,7 @@ if __name__ == "__main__":
     os.system("clear")
     print("\n\nMake sure that you enter the correct card ID for the correct student\n")
 
-    card_id = int("Card ID (######): ")
+    card_id = int(input("Card ID (######): "))
 
     if CardScanner.write_card(card_id):
         print(f"\n{card_id} successfully written to card!\n")
