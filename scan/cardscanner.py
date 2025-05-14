@@ -102,7 +102,7 @@ if __name__ == "__main__":
         break
 
     if CardScanner.write_card(card_id):
-        print(f"\n{card_id} successfully written to card!\n")
+        print(f"\n{card_id} successfully written to card!\nPlease double check to make sure no mistakes were made.")
     else:
         print("\nWrite failed, please try again\n")
 
