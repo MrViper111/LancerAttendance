@@ -37,7 +37,7 @@ def admin_required(func):
 def home():
     return render_template("home.html")
 
-@views.route("login", methods=["GET", "POST"])
+@views.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
         return render_template("login.html")
@@ -51,8 +51,10 @@ def login():
     except (FileNotFoundError, json.JSONDecodeError):
         return "Internal error", 500
 
-    if data.get(id_input) == password_input:
-        return render_template("adminpanel.html")
+    for admin in data:
+        if admin["id"] == id_input and admin["pwd"] == password_input:
+            session["admin_id"] = id_input
+            return redirect("/admin/home")
 
     return render_template("login.html", error="Invalid credentials")
 
