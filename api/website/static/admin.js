@@ -92,7 +92,7 @@ function createUserCard(userData) {
 
     // Create user info paragraph
     let userInfo = document.createElement("p");
-    userInfo.innerHTML = `${userData.name} <span class="lesser">(<a href="../profile/${userData.id}">${userData.id}</a>)</span>`;
+    userInfo.innerHTML = `${userData.name} <span class="lesser">(<a href="../admin/profile/${userData.id}">${userData.id}</a>)</span>`;
     container.appendChild(userInfo);
 
     // Position section
