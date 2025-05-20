@@ -52,6 +52,7 @@ while True:
                 break
 
         if not card_data or not card_data["enabled"]:
+            print("card disabled or expired")
             continue
 
         print("ok, finding user data")

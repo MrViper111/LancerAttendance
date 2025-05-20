@@ -6,7 +6,8 @@ import random
 from crypt import methods
 from threading import Thread
 from flask import Blueprint, render_template, request, jsonify, redirect
-from functools import update_wrapper, wraps
+from functools import wraps
+from flask import redirect, session
 
 from database import Database
 from flask_cors import CORS
@@ -22,25 +23,46 @@ cards = Cards(db.cards)
 CORS(views)
 
 
+def admin_required(func):
+    @wraps(func)
+    def decorated(*args, **kwargs):
+        if "admin_id" not in session:
+            return redirect("/login")
+        return func(*args, **kwargs)
+
+    return decorated
+
+
 @views.route("/")
 def home():
     return render_template("home.html")
 
 @views.route("login", methods=["GET", "POST"])
 def login():
-    if request.method != "POST":
+    if request.method == "GET":
         return render_template("login.html")
 
-    if request.form["email"] == "jake" and request.form["password"] == "jin":
+    id_input = request.form.get("email")
+    password_input = request.form.get("password")
+
+    try:
+        with open("/administrators.json", "r") as file:
+            data = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return "Internal error", 500
+
+    if data.get(id_input) == password_input:
         return render_template("adminpanel.html")
 
-    return render_template("login.html")
+    return render_template("login.html", error="Invalid credentials")
 
 @views.route("admin/home")
+@admin_required
 def admin_home():
-    return redirect("/login")
+    return render_template("adminpanel.html")
 
-@views.route("admin/profile/<id>")
+@views.route("/admin/profile/<id>")
+@admin_required
 def admin_profile(id):
     return render_template("profile.html", id=id)
 
